@@ -14,8 +14,7 @@ RUN pip install --no-cache-dir --upgrade pip && \
 WORKDIR /app
 COPY . .
 
-RUN python -m venv "$VIRTUAL_ENV" && \
-    pip install --no-cache-dir -e ".[dev]"
+RUN python -m venv "$VIRTUAL_ENV"
 
 
 # Stage 2: Run Tests
@@ -25,11 +24,10 @@ RUN uv sync --extra dev
 RUN pytest -q
 
 # Stage 3: Runtime
-FROM builder AS runtime
+FROM python:3.12-slim AS runtime
 
 ENV PYTHONUNBUFFERED = 1 \
     PYTHONDONTWRITETOBYTECODE = 1 \
-    UV_COMPILE_BYTECODE = 1 \
     VIRTUAL_ENV = /opt/venv \
     PATH = "/opt/venv/bin:$PATH"
 
