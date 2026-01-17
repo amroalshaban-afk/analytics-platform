@@ -1,0 +1,8 @@
+services:
+  platform:
+    build:
+      context: ./platform
+      dockerfile: Dockerfile
+    container_name: platform
+    ports:
+      - "8000:8000"
