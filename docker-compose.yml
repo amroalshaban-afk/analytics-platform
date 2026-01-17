@@ -1,6 +1,6 @@
 services:
   platform:
-    image: gchr.io/analytics-platform/platform:0.1.0
+    image: ghcr.io/amroalshaban-afk/platform:0.1.0
     container_name: platform
     ports:
       - "8000:8000"

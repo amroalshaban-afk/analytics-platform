@@ -45,8 +45,6 @@ jobs:
     needs: [build]
 
     steps:
-      - uses: actions/checkout@v4
-
       - name: Deploy to DigitalOcean
         uses: appleboy/ssh-action@v1.0.3
         with:
