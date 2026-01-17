@@ -1,0 +1,50 @@
+# Byte-code files
+*.pyc
+*.whl
+
+# C extensions
+*.so
+
+# Editor-specific files/folders
+.vscode/
+.idea/
+.DS_Store
+
+# Virtual environment folders
+.venv/
+venv/
+env/
+ENV/
+
+# Dependency management
+pip-wheel-cache/
+.tox/
+.mypy_cache/
+.pytest_cache/
+cover/
+htmlcov/
+.nox/
+
+# Logs and databases
+*.log
+*.sqlite3
+*.db
+
+# OS-specific files
+.DS_Store
+.Trash
+
+# Git
+.git/
+.gitignore
+
+# Docker
+.dockerignore
+Dockerfile*
+compose*.yaml
+compose*.yml
+
+# Secrets/credentials
+.env
+.flaskenv
+.secrets/
