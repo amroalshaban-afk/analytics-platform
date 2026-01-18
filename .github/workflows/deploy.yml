@@ -54,7 +54,7 @@ jobs:
           script: |
             cd analytics-platform
 
-            cat <<EOF > .env
+            cat <<EOF > .prod.env
             PLATFORM_OPERATIONS_DB_USER=${{ secrets.PLATFORM_OPERATIONS_DB_USER }}
             PLATFORM_OPERATIONS_DB_PASSWORD=${{ secrets.PLATFORM_OPERATIONS_DB_PASSWORD }}
             PLATFORM_OPERATIONS_DB_NAME=${{ secrets.PLATFORM_OPERATIONS_DB_NAME }}
