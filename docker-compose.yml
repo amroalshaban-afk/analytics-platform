@@ -12,8 +12,6 @@ services:
       POSTGRES_USER: ${PLATFORM_OPERATIONS_DB_USER}
       POSTGRES_PASSWORD: ${PLATFORM_OPERATIONS_DB_PASSWORD}
       POSTGRES_DB: ${PLATFORM_OPERATIONS_DB_NAME}
-    ports:
-      - "5433:5432"
     volumes:
       - platform-operations-db-volume:/var/lib/postgresql/data
     env_file:
