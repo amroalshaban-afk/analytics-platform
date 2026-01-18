@@ -3,7 +3,7 @@ services:
     image: ghcr.io/amroalshaban-afk/platform:0.1.0
     container_name: platform
     ports:
-      - "8000:8000"
+      - "8000"
   
   platform-operations-db:
     image: postgres:17
@@ -23,5 +23,21 @@ services:
       retries: 5
       start_period: 30s
 
+  caddy:
+    image: caddy:2
+    container_name: caddy
+    depends_on:
+      - platform
+      - platform-operations-db
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
 volumes:
   platform-operations-db-volume:
+  caddy_data:
+  caddy_config:
