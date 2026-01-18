@@ -4,3 +4,26 @@ services:
     container_name: platform
     ports:
       - "8000:8000"
+  
+  platform-operations-db:
+    image: postgres:17
+    container_name: platform-operations-db
+    environment:
+      POSTGRES_USER: ${PLATFORM_OPERATIONS_DB_USER}
+      POSTGRES_PASSWORD: ${PLATFORM_OPERATIONS_DB_PASSWORD}
+      POSTGRES_DB: ${PLATFORM_OPERATIONS_DB_NAME}
+    ports:
+      - "5433:5432"
+    volumes:
+      - platform-operations-db-volume:/var/lib/postgresql/data
+    env_file:
+      - ".prod.env"
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "${PLATFORM_OPERATIONS_DB_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+volumes:
+  platform-operations-db-volume:

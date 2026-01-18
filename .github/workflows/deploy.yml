@@ -54,6 +54,13 @@ jobs:
           script: |
             cd analytics-platform
 
+            cat <<EOF > .env
+            PLATFORM_OPERATIONS_DB_USER=${{ secrets.PLATFORM_OPERATIONS_DB_USER }}
+            PLATFORM_OPERATIONS_DB_PASSWORD=${{ secrets.PLATFORM_OPERATIONS_DB_PASSWORD }}
+            PLATFORM_OPERATIONS_DB_NAME=${{ secrets.PLATFORM_OPERATIONS_DB_NAME }}
+            PLATFORM_OPERATIONS_DB_URL=${{ secrets.PLATFORM_OPERATIONS_DB_URL }}
+            EOF
+
             echo ${{ secrets.REGISTRY_TOKEN }} | \
               docker login ghcr.io \
                 --username amroalshaban-afk \
