@@ -19,7 +19,7 @@ services:
     volumes:
       - platform-operations-db-volume:/var/lib/postgresql/data
     env_file:
-      - ".dev.env"
+      - '.dev.env'
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "${PLATFORM_OPERATIONS_DB_USER}"]
       interval: 10s
