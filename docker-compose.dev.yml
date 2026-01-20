@@ -6,6 +6,8 @@ services:
     container_name: platform
     ports:
       - "8000:8000"
+    env_file:
+      - '.dev.env'
 
   platform-operations-db:
     image: postgres:17
@@ -26,6 +28,22 @@ services:
       timeout: 5s
       retries: 5
       start_period: 30s
+  
+  caddy-dev:
+    image: caddy:2
+    container_name: caddy-dev
+    depends_on:
+      - platform
+      - platform-operations-db
+    ports:
+      - "7000:7000"
+    volumes:
+      - ./Caddyfile_dev:/etc/caddy/Caddyfile:ro
+      - caddy_data_dev:/data
+      - caddy_config_dev:/config
+    
 
 volumes:
   platform-operations-db-volume:
+  caddy_data_dev:
+  caddy_config_dev:

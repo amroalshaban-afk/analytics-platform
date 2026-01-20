@@ -1,0 +1,6 @@
+:7000 {
+    rewrite * /api/slack/baloot
+    reverse_proxy platform:8000 {
+        header_up Host {host}
+    }
+}
