@@ -4,4 +4,3 @@ paths = [
     *slash_commands_paths,
 ]
 
-print(paths)
