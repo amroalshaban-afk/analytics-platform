@@ -1,11 +1,33 @@
 services:
-  platform:
+  platform-api:
     build:
       context: ./platform
-      dockerfile: Dockerfile
-    container_name: platform
+      dockerfile: src/api/Dockerfile
+    container_name: platform-api
+    environment:
+      CELERY_BROKER: ${CELERY_BROKER}
+      CELERY_RESULT_BACKEND: ${CELERY_RESULT_BACKEND}
     ports:
       - "8000:8000"
+    volumes:
+      - ./platform:/app
+    env_file:
+      - '.dev.env'
+  
+  platform-queue:
+    build:
+      context: ./platform
+      dockerfile: src/services/Dockerfile
+    command: celery -A tasks worker --loglevel=INFO
+    environment:
+      CELERY_BROKER: ${CELERY_BROKER}
+      CELERY_RESULT_BACKEND: ${CELERY_RESULT_BACKEND}
+    volumes:
+      - ./platform:/app
+    depends_on:
+      - platform-redis
+      - platform-operations-db
+      - platform-rabbitmq
     env_file:
       - '.dev.env'
 
@@ -29,11 +51,42 @@ services:
       retries: 5
       start_period: 30s
   
+  platform-redis:
+    image: redis:8.4-rc1-alpine3.22
+    container_name: platform-redis
+    environment:
+      REDIS_APPENDONLY: ${REDIS_APPENDONLY:-yes}
+      REDIS_APPENDFSYNC: ${REDIS_APPENDFSYNC:-everysec}
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-db-volume:/data
+    command: >
+      redis-server
+      --appendonly ${REDIS_APPENDONLY}
+      --appendfsync ${REDIS_APPENDFSYNC}
+      --requirepass ${REDIS_PASSWORD}
+  
+  platform-rabbitmq:
+    image: rabbitmq:3-management
+    hostname: platform-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq/
+      - rabbitmq_log:/var/log/rabbitmq/
+  
   caddy-dev:
     image: caddy:2
     container_name: caddy-dev
     depends_on:
-      - platform
+      - platform-api
+      - platform-queue
       - platform-operations-db
     ports:
       - "7000:7000"
@@ -47,3 +100,6 @@ volumes:
   platform-operations-db-volume:
   caddy_data_dev:
   caddy_config_dev:
+  redis-db-volume:
+  rabbitmq_data:
+  rabbitmq_log:

@@ -17,7 +17,7 @@ jobs:
 
       - name: Run PyTest
         run: |
-          docker build -t platform:test --target tester -f platform/Dockerfile platform --progress=plain --no-cache
+          docker build -t platform:test --target tester -f platform/src/api/Dockerfile platform/src/api --progress=plain --no-cache
           docker run --rm platform:test pytest
 
 
@@ -37,7 +37,7 @@ jobs:
 
       - name: Push to GHCR
         run: |
-          docker build -t ghcr.io/amroalshaban-afk/platform:0.1.0 --target runtime -f platform/Dockerfile platform
+          docker build -t ghcr.io/amroalshaban-afk/platform:0.1.0 --target runtime -f platform/src/api/Dockerfile platform/src/api
           docker push ghcr.io/amroalshaban-afk/platform:0.1.0
   
   deploy:
