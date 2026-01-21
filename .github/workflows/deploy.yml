@@ -85,4 +85,5 @@ jobs:
                 --password-stdin
 
             git pull origin main
-            docker compose --env-file .prod.env -f docker-compose.prod.yml up --build -d
+            docker compose --env-file .prod.env -f docker-compose.prod.yml build --no-cache --progress=plain
+            docker compose --env-file .prod.env -f docker-compose.prod.yml up -d
