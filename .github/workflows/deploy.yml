@@ -85,5 +85,5 @@ jobs:
                 --password-stdin
 
             git pull origin main
-            docker compose pull
+            docker compose --env-file .prod.env -f docker-compose.prod.yml pull
             docker compose --env-file .prod.env -f docker-compose.prod.yml up -d --force-recreate --remove-orphans
