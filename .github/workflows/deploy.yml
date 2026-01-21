@@ -17,9 +17,8 @@ jobs:
 
       - name: Run PyTest
         run: |
-          docker build -t platform:test --target tester -f platform/src/api/Dockerfile platform/src/api --progress=plain --no-cache
-          docker run --rm platform:test pytest
-
+          docker build -t platform-api:test --target tester -f platform/src/api/Dockerfile platform --progress=plain --no-cache
+          docker run --rm platform-api:test pytest
 
   build:
     runs-on: ubuntu-latest
@@ -37,9 +36,12 @@ jobs:
 
       - name: Push to GHCR
         run: |
-          docker build -t ghcr.io/amroalshaban-afk/platform:0.1.0 --target runtime -f platform/src/api/Dockerfile platform/src/api
-          docker push ghcr.io/amroalshaban-afk/platform:0.1.0
-  
+          docker build -t ghcr.io/amroalshaban-afk/platform-api:0.1.0 --target runtime -f platform/src/api/Dockerfile platform
+          docker push ghcr.io/amroalshaban-afk/platform-api:0.1.0
+
+          docker build -t ghcr.io/amroalshaban-afk/platform-services:0.1.0 --target runtime -f platform/src/services/Dockerfile platform
+          docker push ghcr.io/amroalshaban-afk/platform-services:0.1.0
+
   deploy:
     runs-on: ubuntu-latest
     needs: [build]
@@ -59,12 +61,25 @@ jobs:
             PLATFORM_OPERATIONS_DB_PASSWORD=${{ secrets.PLATFORM_OPERATIONS_DB_PASSWORD }}
             PLATFORM_OPERATIONS_DB_NAME=${{ secrets.PLATFORM_OPERATIONS_DB_NAME }}
             PLATFORM_OPERATIONS_DB_URL=${{ secrets.PLATFORM_OPERATIONS_DB_URL }}
+            
+            SLACK_VIP_BALOOT_BOT_OAUTH_TOKEN=${{ secrets.SLACK_VIP_BALOOT_BOT_OAUTH_TOKEN }}
+            SLACK_VIP_BALOOT_SIGNING_SECRET=${{ secrets.SLACK_VIP_BALOOT_SIGNING_SECRET }}
+            
+            REDIS_APPENDONLY=${{ secrets.REDIS_APPENDONLY }}
+            REDIS_APPENDFSYNC=${{ secrets.REDIS_APPENDFSYNC }}
+            REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}
+            
+            RABBITMQ_DEFAULT_USER=${{ secrets.RABBITMQ_DEFAULT_USER }}
+            RABBITMQ_DEFAULT_PASS=${{ secrets.RABBITMQ_DEFAULT_PASS }}
+            
+            CELERY_BROKER=${{ secrets.CELERY_BROKER }}
+            CELERY_RESULT_BACKEND=${{ secrets.CELERY_RESULT_BACKEND }}
             EOF
 
             echo ${{ secrets.REGISTRY_TOKEN }} | \
               docker login ghcr.io \
                 --username amroalshaban-afk \
                 --password-stdin
-            
+
             git pull origin main
-            docker compose up -d
+            docker compose --env-file .prod.env -f docker-compose.prod.yml up -d
