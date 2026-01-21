@@ -1,34 +1,24 @@
 services:
   platform-api:
-    build:
-      context: ./platform
-      dockerfile: src/api/Dockerfile
+    image: ghcr.io/amroalshaban-afk/platform-api:0.1.0
     container_name: platform-api
-    environment:
-      CELERY_BROKER: ${CELERY_BROKER}
-      CELERY_RESULT_BACKEND: ${CELERY_RESULT_BACKEND}
     ports:
-      - "8000:8000"
-    volumes:
-      - ./platform:/app
+      - "8000"
     env_file:
-      - '.dev.env'
+      - ".prod.env"
   
   platform-services:
-    build:
-      context: ./platform
-      dockerfile: src/services/Dockerfile
+    image: ghcr.io/amroalshaban-afk/platform-services:0.1.0
+    container_name: platform-services
     environment:
       CELERY_BROKER: ${CELERY_BROKER}
       CELERY_RESULT_BACKEND: ${CELERY_RESULT_BACKEND}
-    volumes:
-      - ./platform:/app
     depends_on:
       - platform-redis
-      - platform-operations-db
       - platform-rabbitmq
+      - platform-operations-db
     env_file:
-      - '.dev.env'
+      - ".prod.env"
 
   platform-operations-db:
     image: postgres:17
@@ -37,19 +27,17 @@ services:
       POSTGRES_USER: ${PLATFORM_OPERATIONS_DB_USER}
       POSTGRES_PASSWORD: ${PLATFORM_OPERATIONS_DB_PASSWORD}
       POSTGRES_DB: ${PLATFORM_OPERATIONS_DB_NAME}
-    ports:
-      - "5433:5432"
     volumes:
       - platform-operations-db-volume:/var/lib/postgresql/data
     env_file:
-      - '.dev.env'
+      - ".prod.env"
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "${PLATFORM_OPERATIONS_DB_USER}"]
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 30s
-  
+
   platform-redis:
     image: redis:8.4-rc1-alpine3.22
     container_name: platform-redis
@@ -58,9 +46,11 @@ services:
       REDIS_APPENDFSYNC: ${REDIS_APPENDFSYNC:-everysec}
       REDIS_PASSWORD: ${REDIS_PASSWORD}
     ports:
-      - "6379:6379"
+      - "6379"
     volumes:
       - redis-db-volume:/data
+    env_file:
+      - ".prod.env"
     command: >
       redis-server
       --appendonly ${REDIS_APPENDONLY}
@@ -69,36 +59,40 @@ services:
   
   platform-rabbitmq:
     image: rabbitmq:3-management
-    hostname: platform-rabbitmq
+    container_name: platform-rabbitmq
     ports:
-      - "5672:5672"
-      - "15672:15672"
+      - "5672"
+      - "15672"
     environment:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
     volumes:
-      - rabbitmq_data:/var/lib/rabbitmq/
-      - rabbitmq_log:/var/log/rabbitmq/
-  
-  caddy-dev:
+      - rabbitmq_data:/var/lib/rabbitmq
+      - rabbitmq_log:/var/log/rabbitmq
+    env_file:
+      - ".prod.env"
+
+
+  caddy:
     image: caddy:2
-    container_name: caddy-dev
+    container_name: caddy
     depends_on:
-      - platform-api
-      - platform-services
+      - platform
       - platform-operations-db
     ports:
-      - "7000:7000"
+      - "80:80"
+      - "443:443"
     volumes:
-      - ./Caddyfile_dev:/etc/caddy/Caddyfile:ro
-      - caddy_data_dev:/data
-      - caddy_config_dev:/config
-    
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    env_file:
+      - ".prod.env"
 
 volumes:
   platform-operations-db-volume:
-  caddy_data_dev:
-  caddy_config_dev:
+  caddy_data:
+  caddy_config:
   redis-db-volume:
   rabbitmq_data:
   rabbitmq_log:

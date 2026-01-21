@@ -1,5 +1,7 @@
 from fastapi import FastAPI
-from api.utils.func1 import add
+from utils.func1 import add
+
+from services.tasks import app as celery_app
 
 
 def generator(app: FastAPI):
