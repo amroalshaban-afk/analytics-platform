@@ -9,21 +9,35 @@ from api.routes.slack.endpoints import paths as slack_paths
 
 def generator(app: FastAPI):
 
-    # Baloot Client
-    slack_baloot_app = AsyncApp(
+    # Slack Clients
+    slack_vip_baloot_app = AsyncApp(
         token=os.getenv('SLACK_VIP_BALOOT_BOT_OAUTH_TOKEN'),
         signing_secret=os.getenv('SLACK_VIP_BALOOT_SIGNING_SECRET'),
         name='VIP-Baloot'
     )
+    slack_awad_delivery_app = AsyncApp(
+        token=os.getenv('SLACK_AWAD_DELIVERY_BOT_OAUTH_TOKEN'),
+        signing_secret=os.getenv('SLACK_AWAD_DELIVERY_SIGNING_SECRET'),
+        name='Awad-Delivery',
+    )
+
 
     # Inject Slack Endpoints into Slack Apps
     for slack_path in slack_paths:
-        slack_path(slack_baloot_app)
+        slack_path(slack_vip_baloot_app)
+        slack_path(slack_awad_delivery_app)
 
-    slack_baloot_app_handler = AsyncSlackRequestHandler(slack_baloot_app)
 
-    # print(f"SLACK_BALOOT_APP_DEV_NAME:", os.getenv('SLACK_VIP_BALOOT_BOT_OAUTH_TOKEN'))
+    # Define Slack App Handlers
+    slack_vip_baloot_app_handler = AsyncSlackRequestHandler(slack_vip_baloot_app)
+    slack_awad_delivery_app_handler = AsyncSlackRequestHandler(slack_awad_delivery_app)
 
-    @app.post('/api/slack/baloot')
-    async def slack_baloot_app_api_url(request: Request):
-        return await slack_baloot_app_handler.handle(request)
+
+    # Define Slack App POST Endpoints
+    @app.post('/api/slack/vip-baloot')
+    async def slack_vip_baloot_app_api_url(request: Request):
+        return await slack_vip_baloot_app_handler.handle(request)
+    
+    @app.post('/api/slack/awad-delivery')
+    async def slack_awad_delivery_app_api_url(request: Request):
+        return await slack_awad_delivery_app_handler.handle(request)

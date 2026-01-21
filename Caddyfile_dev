@@ -1,5 +1,12 @@
 :7000 {
-    rewrite * /api/slack/baloot
+    rewrite * /api/slack/vip-baloot
+    reverse_proxy platform-api:8000 {
+        header_up Host {host}
+    }
+}
+
+:7001 {
+    rewrite * /api/slack/awad-delivery
     reverse_proxy platform-api:8000 {
         header_up Host {host}
     }
