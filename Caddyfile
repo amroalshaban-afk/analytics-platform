@@ -1,5 +1,5 @@
 datdungeon.com {
-    reverse_proxy platform:8000
+    reverse_proxy platform-api:8000
 
     header {
         X-Content-Type-Options nosniff
