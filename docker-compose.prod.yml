@@ -77,7 +77,10 @@ services:
     image: caddy:2
     container_name: caddy
     depends_on:
-      - platform
+      - platform-api
+      - platform-services
+      - platform-redis
+      - platform-rabbitmq
       - platform-operations-db
     ports:
       - "80:80"
