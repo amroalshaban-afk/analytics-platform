@@ -40,7 +40,7 @@ def generator(assistant: AsyncAssistant):
     if assistant.app_name == 'Awad-Delivery':
 
         @assistant.user_message
-        async def slack_vip_baloot_assistant_user_message(payload, set_status, client):
+        async def slack_awad_delivery_assistant_user_message(payload, set_status, client):
             # print(payload)
             user_id = payload['user']
             channel_id = payload['channel']
