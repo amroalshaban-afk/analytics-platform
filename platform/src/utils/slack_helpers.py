@@ -3,4 +3,4 @@ from settings import ENVIRONMENT
 
 
 def append_app(app: AsyncApp):
-    return '-' + app.name.lower() + (ENVIRONMENT if ENVIRONMENT == 'dev' else '')
+    return '-' + app.name.lower() + (f'-{ENVIRONMENT}' if ENVIRONMENT == 'dev' else '')
