@@ -1,14 +1,16 @@
 from fastapi import FastAPI
 from fastapi.requests import Request
-from slack_bolt.async_app import AsyncApp
+from slack_bolt.async_app import AsyncApp, AsyncAssistant
 from slack_bolt.adapter.fastapi.async_handler import AsyncSlackRequestHandler
 import os
+import asyncio
 
 from api.routes.slack.endpoints import paths as slack_paths
+from api.routes.slack.assistants.endpoints import paths as slack_assistant_paths
 
 
 def generator(app: FastAPI):
-
+    
     # Slack Clients
     slack_vip_baloot_app = AsyncApp(
         token=os.getenv('SLACK_VIP_BALOOT_BOT_OAUTH_TOKEN'),
@@ -20,6 +22,20 @@ def generator(app: FastAPI):
         signing_secret=os.getenv('SLACK_AWAD_DELIVERY_SIGNING_SECRET'),
         name='Awad-Delivery',
     )
+
+    # Slack Assistants
+    slack_vip_baloot_assistant = AsyncAssistant(app_name='VIP-Baloot')
+    slack_awad_delivery_assistant = AsyncAssistant(app_name='Awad-Delivery')
+
+    # Inject Slack Assistant Endpoints into Slack Apps
+    for slack_assistant_path in slack_assistant_paths:
+        slack_assistant_path(slack_vip_baloot_assistant)
+        slack_assistant_path(slack_awad_delivery_assistant)
+
+
+    # Attach Assistants to Slack Apps
+    slack_vip_baloot_app.use(slack_vip_baloot_assistant)
+    slack_awad_delivery_app.use(slack_awad_delivery_assistant)
 
 
     # Inject Slack Endpoints into Slack Apps
