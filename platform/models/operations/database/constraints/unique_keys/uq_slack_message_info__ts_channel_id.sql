@@ -1,0 +1,3 @@
+ALTER TABLE SLACK_MESSAGES_INFO
+ADD CONSTRAINT uq_slack_messages_info__ts_channel_id
+UNIQUE (TS, CHANNEL_ID);

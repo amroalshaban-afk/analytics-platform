@@ -1,19 +1,25 @@
-variable "url" {
+variable "operations_url" {
     type = string
     default = getenv("PLATFORM_OPERATIONS_DB_URL")
 }
 
-env "main" {
-    url = var.url
+variable "analytics_url" {
+    type = string
+    default = getenv("PLATFORM_ANALYTICS_DB_URL")
+}
+
+env "operations" {
+    url = var.operations_url
 
     src = [
-        "file://database/tables",
-        "file://database/constraints",
-        "file://database/indexes"
+        "file://operations/database/tables",
+        "file://operations/database/constraints/unique_keys",
+        "file://operations/database/constraints/foreign_keys",
+        "file://operations/database/indexes"
     ]
 
     migration {
-        dir = "file://migrations"
+        dir = "file://operations/migrations"
     }
 
     format {
@@ -23,4 +29,25 @@ env "main" {
     }
 
     dev = "docker://postgres/17/dev"
+}
+
+env "analytics" {
+    url = var.analytics_url
+
+    src = [
+        "file://analytics/databases/schema",
+        "file://analytics/databases/public/tables"
+    ]
+
+    migration {
+        dir = "file://analytics/migrations"
+    }
+
+    format {
+        schema {
+            inspect = "{{ sql . }}"
+        }
+    }
+
+    dev = "docker://clickhouse/latest"
 }

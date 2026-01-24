@@ -1,0 +1,3 @@
+ALTER TABLE SLACK_CONVERSATIONS_INFO
+ADD CONSTRAINT uq_slack_conversations_info__channel_id_team_id
+UNIQUE (CHANNEL_ID, TEAM_ID);

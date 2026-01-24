@@ -1,0 +1,18 @@
+<clickhouse>
+    <users>
+        <default>
+            <networks>
+                <ip>127.0.0.1</ip>
+                <ip>::1</ip>
+            </networks>
+        </default>
+
+        <platform_api name="platform_api">
+            <password_sha256_hex from_env="PLATFORM_ANALYTICS_DB_PASSWORD_SHA256_HASH" />
+            <networks>
+                <ip>0.0.0.0/0</ip>
+                <ip>::/0</ip>
+            </networks>
+        </platform_api>
+    </users>
+</clickhouse>

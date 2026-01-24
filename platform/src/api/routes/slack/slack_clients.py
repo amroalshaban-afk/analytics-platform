@@ -2,10 +2,16 @@ from fastapi import FastAPI
 from fastapi.requests import Request
 from slack_bolt.async_app import AsyncApp, AsyncAssistant
 from slack_bolt.adapter.fastapi.async_handler import AsyncSlackRequestHandler
-from settings import SLACK_VIP_BALOOT_BOT_OAUTH_TOKEN, SLACK_VIP_BALOOT_SIGNING_SECRET, SLACK_AWAD_DELIVERY_BOT_OAUTH_TOKEN, SLACK_AWAD_DELIVERY_SIGNING_SECRET
-
+from settings import (
+    SLACK_VIP_BALOOT_BOT_OAUTH_TOKEN,
+    SLACK_VIP_BALOOT_SIGNING_SECRET,
+    SLACK_AWAD_DELIVERY_BOT_OAUTH_TOKEN,
+    SLACK_AWAD_DELIVERY_SIGNING_SECRET
+)
 from api.routes.slack.endpoints import paths as slack_paths
 from api.routes.slack.assistants.endpoints import paths as slack_assistant_paths
+from utils.slack.context_store import AsyncPostgresAssistantContextStore
+from initialize_dbs import operations
 
 
 def generator(app: FastAPI):
@@ -23,8 +29,14 @@ def generator(app: FastAPI):
     )
 
     # Slack Assistants
-    slack_vip_baloot_assistant = AsyncAssistant(app_name='VIP-Baloot')
-    slack_awad_delivery_assistant = AsyncAssistant(app_name='Awad-Delivery')
+    slack_vip_baloot_assistant = AsyncAssistant(
+        app_name='VIP-Baloot',
+        thread_context_store=AsyncPostgresAssistantContextStore(db=operations),
+    )
+    slack_awad_delivery_assistant = AsyncAssistant(
+        app_name='Awad-Delivery',
+        thread_context_store=AsyncPostgresAssistantContextStore(db=operations),
+    )
 
     # Inject Slack Assistant Endpoints into Slack Apps
     for slack_assistant_path in slack_assistant_paths:

@@ -1,0 +1,3 @@
+ALTER TABLE SLACK_USERS_INFO
+ADD CONSTRAINT uq_slack_users_info__user_id_team_id
+UNIQUE (USER_ID, TEAM_ID);

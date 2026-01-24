@@ -1,0 +1,18 @@
+from utils.db import DB
+from utils.analytics_db import AnalyticsDB
+from settings import (
+    PLATFORM_OPERATIONS_DB_URL,
+    PLATFORM_ANALYTICS_DB_HOST,
+    PLATFORM_ANALYTICS_DB_PORT,
+    PLATFORM_ANALYTICS_DB_USERNAME,
+    PLATFORM_ANALYTICS_DB_PASSWORD
+)
+
+
+operations = DB(PLATFORM_OPERATIONS_DB_URL)
+analytics = AnalyticsDB(
+    host=PLATFORM_ANALYTICS_DB_HOST,
+    port=PLATFORM_ANALYTICS_DB_PORT,
+    username=PLATFORM_ANALYTICS_DB_USERNAME,
+    password=PLATFORM_ANALYTICS_DB_PASSWORD
+)

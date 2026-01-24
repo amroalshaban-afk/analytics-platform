@@ -10,8 +10,7 @@ def generator(assistant: AsyncAssistant):
 
         @assistant.user_message
         async def slack_vip_baloot_assistant_user_message(payload, set_status, client):
-            # print(payload)
-            user_id = payload['user']
+
             channel_id = payload['channel']
             thread_ts = payload['thread_ts']
 
@@ -29,7 +28,6 @@ def generator(assistant: AsyncAssistant):
             chunks = [letter for letter in random_response]
 
             streamer = await client.chat_stream(channel=channel_id, thread_ts=thread_ts)
-            print(dir(streamer))
             for chunk in chunks:
                 await streamer.append(markdown_text=chunk)
 
@@ -40,12 +38,7 @@ def generator(assistant: AsyncAssistant):
     if assistant.app_name == 'Awad-Delivery':
 
         @assistant.user_message
-        async def slack_awad_delivery_assistant_user_message(payload, set_status, client):
-            # print(payload)
-            user_id = payload['user']
-            channel_id = payload['channel']
-            thread_ts = payload['thread_ts']
-
+        async def slack_awad_delivery_assistant_user_message(set_status, say):
             await set_status(
                 status='Thinking...',
                 loading_messages=[
@@ -55,42 +48,4 @@ def generator(assistant: AsyncAssistant):
                 ]
             )
 
-            await asyncio.sleep(5)
-            random_response = """King of delivery - Awad Abu Shafa
-
-Awad Abu Shafa, the leader of the region, is taking over the service to serve his friend Jabr Qawans in a unique 3D toy. Awad Abu Shifa is a seasoned driver who drives time and loves the streets of Amman.
-
-Choose your car, modify it, and develop it throughout Amman and its environs
-
-Collect orders from restaurants and connect them to the right place before the time is up
-Develop your car and discover multiple new restaurants
-
-Game features:
-- Unique 3D drawings
-Funny characters
-- Multiple cars are scalable
-- Large map and open world
-
-Do not forget to evaluate the game and admire our page on Facebook, this game comes from Tomato, the publisher of the first Arab games on mobile devices in the Arab world
-
-King of delivery - Awad abo shefeh
-
-Awad abu sheffeh is a skilled driver who keeps his friend Jaber Gawanes to deliver food in a new 3D one of a kind car game.
-
-Take a ride in Awad's car around the city of Amman and collect orders from restaurants and deliver it to the right place before the time run out
-
-Upgrade your car and unlock multiple restaurants to make more & more deliveries!
-
-The game features:
-1 - Unique 3D Graphics
-2 - Funny characters
-3 - Multiple up-gradable cars
-4 - Large map and open world"""
-            chunks = [letter for letter in random_response]
-
-            streamer = await client.chat_stream(channel=channel_id, thread_ts=thread_ts)
-            print(dir(streamer))
-            for chunk in chunks:
-                await streamer.append(markdown_text=chunk)
-
-            await streamer.stop()
+            await say(text='This is a message')

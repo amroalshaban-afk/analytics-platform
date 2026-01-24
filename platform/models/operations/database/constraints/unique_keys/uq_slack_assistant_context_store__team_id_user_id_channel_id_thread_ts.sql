@@ -1,0 +1,3 @@
+ALTER TABLE SLACK_ASSISTANT_CONTEXT_STORE
+ADD CONSTRAINT uq_slack_assistant_context_store__team_id_user_id_channel_id_thread_ts
+UNIQUE (CHANNEL_ID, THREAD_TS);

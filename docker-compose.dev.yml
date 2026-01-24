@@ -94,7 +94,36 @@ services:
       - ./Caddyfile_dev:/etc/caddy/Caddyfile:ro
       - caddy_data_dev:/data
       - caddy_config_dev:/config
-    
+
+  platform-operations-db-schema-design:
+    image: xinsodev/drawdb:latest
+    container_name: platform-operations-db-schema-design
+    ports:
+      - "3000:80"
+  
+  platform-analytics-db:
+    image: clickhouse/clickhouse-server:24.10.2.80-alpine
+    container_name: platform-analytics-db
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8123:8123"
+      - "127.0.0.1:9000:9000"
+    volumes:
+      - platform-analytics-db-volume:/var/lib/clickhouse
+      - ./platform-analytics-db/users.d:/etc/clickhouse-server/users.d:ro
+      - ./platform-analytics-db/config.d:/etc/clickhouse-server/config.d:ro
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+    environment:
+      PLATFORM_ANALYTICS_DB_PASSWORD_SHA256_HASH: ${PLATFORM_ANALYTICS_DB_PASSWORD_SHA256_HASH}
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:8123/ping | grep -q Ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
 
 volumes:
   platform-operations-db-volume:
@@ -103,3 +132,4 @@ volumes:
   redis-db-volume:
   rabbitmq_data:
   rabbitmq_log:
+  platform-analytics-db-volume:
